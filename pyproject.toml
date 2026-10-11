@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "profiler"
+version = "0.1.0"
+description = "Sourced Norwegian company profile generator adhering to strict provenance rules"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "tenacity>=8.0.0",
+    "selectolax>=0.3.0",
+    "typer>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.23.0",
+    "respx>=0.20.0",
+]
+
+[project.scripts]
+profiler = "profiler.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]

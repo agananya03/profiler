@@ -1,0 +1,14 @@
+{
+  "organisasjonsnummer": "999000111",
+  "navn": "GAMLE NORDIC SERVICES AS",
+  "organisasjonsform": {
+    "kode": "AS",
+    "beskrivelse": "Aksjeselskap"
+  },
+  "slettedato": "2023-01-15",
+  "slettingstype": "Slettet i Enhetsregisteret",
+  "slettet": true,
+  "konkurs": false,
+  "underAvvikling": false,
+  "underTvangsavviklingEllerTvangsopplosning": false
+}

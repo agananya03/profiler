@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "journalnr": "202499999",
+    "regnskapsperiode": {
+      "fraDato": "2023-01-01",
+      "tilDato": "2023-12-31"
+    },
+    "regnskapsaar": 2023,
+    "valuta": "NOK",
+    "virksomhet": {
+      "organisasjonsnummer": "923609016",
+      "organisasjonsform": "AS"
+    },
+    "resultatregnskapResultat": {
+      "driftsresultat": {
+        "driftsinntekter": {
+          "salgsinntekt": 15000000.0,
+          "sumDriftsinntekter": 15000000.0
+        },
+        "driftsresultat": 2500000.0
+      },
+      "aarsresultat": 1950000.0
+    },
+    "balanseEiendeler": {
+      "sumEiendeler": 12000000.0
+    },
+    "balanseEgenkapitalGjeld": {
+      "egenkapital": {
+        "sumEgenkapital": 6500000.0
+      }
+    }
+  }
+]

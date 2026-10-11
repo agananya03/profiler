@@ -1,0 +1,46 @@
+{
+  "results": [
+    {
+      "id": "2024-001",
+      "title": "Cloud Infrastructure Modernization",
+      "buyer": "Oslo Kommune",
+      "date": "2024-06-01",
+      "url": "https://doffin.no/notices/2024-001"
+    },
+    {
+      "id": "2024-002",
+      "title": "Cybersecurity Audit Services",
+      "buyer": "Politiet",
+      "date": "2024-05-15",
+      "url": "https://doffin.no/notices/2024-002"
+    },
+    {
+      "id": "2024-003",
+      "title": "Enterprise ERP System Implementation",
+      "buyer": "Statens Vegvesen",
+      "date": "2024-04-10",
+      "url": "https://doffin.no/notices/2024-003"
+    },
+    {
+      "id": "2024-004",
+      "title": "Data Analytics Platform Development",
+      "buyer": "Skatteetaten",
+      "date": "2024-03-20",
+      "url": "https://doffin.no/notices/2024-004"
+    },
+    {
+      "id": "2024-005",
+      "title": "Digital Identity Solution",
+      "buyer": "NAV",
+      "date": "2024-02-05",
+      "url": "https://doffin.no/notices/2024-005"
+    },
+    {
+      "id": "2024-006",
+      "title": "Legacy System Maintenance (Older Contract)",
+      "buyer": "Bærum Kommune",
+      "date": "2023-11-01",
+      "url": "https://doffin.no/notices/2024-006"
+    }
+  ]
+}

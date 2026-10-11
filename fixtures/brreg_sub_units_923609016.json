@@ -1,0 +1,23 @@
+{
+  "page": {
+    "totalElements": 30,
+    "totalPages": 2,
+    "size": 30
+  },
+  "_embedded": {
+    "underenheter": [
+      {
+        "organisasjonsnummer": "999111222",
+        "navn": "EQUINOR ASA AVD OSLO",
+        "beliggenhetsadresse": {
+          "adresse": ["Forusbeen 50"],
+          "postnummer": "4035",
+          "poststed": "STAVANGER"
+        },
+        "naeringskode1": {
+          "kode": "06.100"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "id": "5493001KJTIIGC8Y1R12",
+      "type": "lei-records",
+      "attributes": {
+        "lei": "5493001KJTIIGC8Y1R12",
+        "entity": {
+          "legalName": {
+            "name": "NORWEGIAN TECH LABS AS"
+          },
+          "status": "ISSUED",
+          "registeredAt": {
+            "id": "RA000472"
+          },
+          "legalAddress": {
+            "country": "NO"
+          }
+        },
+        "registration": {
+          "status": "ISSUED"
+        }
+      },
+      "relationships": {
+        "direct-parent": {
+          "data": {
+            "id": "549300PARENTDIRECT01",
+            "type": "lei-records"
+          }
+        },
+        "ultimate-parent": {
+          "data": {
+            "id": "549300PARENTULTIMA02",
+            "type": "lei-records"
+          }
+        }
+      }
+    }
+  ]
+}

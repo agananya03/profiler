@@ -1,0 +1,22 @@
+{
+  "kunngjoringer": [
+    {
+      "id": "20230009999",
+      "publisertDato": "2023-05-15",
+      "opplysning": {
+        "tittel": "Endring av aksjekapital",
+        "kode": "KAPITAL"
+      },
+      "url": "https://kunngjoringer.brreg.no/publisering/hente/20230009999"
+    },
+    {
+      "id": "20220008888",
+      "publisertDato": "2022-10-10",
+      "opplysning": {
+        "tittel": "Fusjon",
+        "kode": "FUSJON"
+      },
+      "url": "https://kunngjoringer.brreg.no/publisering/hente/20220008888"
+    }
+  ]
+}

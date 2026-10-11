@@ -1,0 +1,5 @@
+orgnr,field,expected_value,source_url
+923609016,legal_name,NORWEGIAN TECH LABS AS,https://data.brreg.no/enhetsregisteret/api/enheter/923609016
+923609016,employee_count,15,https://data.brreg.no/enhetsregisteret/api/enheter/923609016
+986161474,legal_name,TORDENSKJOLD CONSULTING AS,https://data.brreg.no/enhetsregisteret/api/enheter/986161474
+986161474,employee_count,5,https://data.brreg.no/enhetsregisteret/api/enheter/986161474

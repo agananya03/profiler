@@ -1,0 +1,31 @@
+{
+  "organisasjonsnummer": "923609016",
+  "navn": "NORWEGIAN TECH LABS AS",
+  "organisasjonsform": {
+    "kode": "AS",
+    "beskrivelse": "Aksjeselskap"
+  },
+  "registreringsdatoEnhetsregisteret": "2019-08-15",
+  "naeringskode1": {
+    "kode": "62.010",
+    "beskrivelse": "Programmeringstjenester"
+  },
+  "antallAnsatte": 15,
+  "forretningsadresse": {
+    "adresse": ["Storgata 10"],
+    "postnummer": "0155",
+    "poststed": "OSLO",
+    "kommune": "OSLO",
+    "land": "Norge"
+  },
+  "postadresse": {
+    "adresse": ["Postboks 123 Sentrum"],
+    "postnummer": "0101",
+    "poststed": "OSLO",
+    "kommune": "OSLO",
+    "land": "Norge"
+  },
+  "konkurs": false,
+  "underAvvikling": false,
+  "underTvangsavviklingEllerTvangsopplosning": false
+}

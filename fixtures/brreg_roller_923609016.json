@@ -1,0 +1,58 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://data.brreg.no/enhetsregisteret/api/enheter/923609016/roller"
+    }
+  },
+  "rollegrupper": [
+    {
+      "type": {
+        "kode": "KONTAKTPERSON",
+        "beskrivelse": "Kontaktperson"
+      },
+      "roller": [
+        {
+          "type": {
+            "kode": "DAGL",
+            "beskrivelse": "Daglig leder"
+          },
+          "person": {
+            "navn": {
+              "fornavn": "Anders",
+              "etternavn": "Opedal"
+            },
+            "fodselsdato": "1968-05-04"
+          },
+          "fratraadt": false,
+          "avregistrert": false
+        },
+        {
+          "type": {
+            "kode": "LEDE",
+            "beskrivelse": "Styreleder"
+          },
+          "person": {
+            "navn": {
+              "fornavn": "Jon",
+              "etternavn": "Erik"
+            }
+          },
+          "fratraadt": false,
+          "avregistrert": false
+        },
+        {
+          "type": {
+            "kode": "REVI",
+            "beskrivelse": "Revisor"
+          },
+          "enhet": {
+            "organisasjonsnummer": "980211234",
+            "navn": ["PRICEWATERHOUSECOOPERS AS"]
+          },
+          "fratraadt": false,
+          "avregistrert": false
+        }
+      ]
+    }
+  ]
+}

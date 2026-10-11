@@ -1,0 +1,31 @@
+{
+  "head": {
+    "vars": ["item", "description", "inception", "official_website", "industryLabel"]
+  },
+  "results": {
+    "bindings": [
+      {
+        "item": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q11991850"
+        },
+        "description": {
+          "type": "literal",
+          "value": "Norwegian technology research company"
+        },
+        "inception": {
+          "type": "literal",
+          "value": "2020-01-15T00:00:00Z"
+        },
+        "official_website": {
+          "type": "uri",
+          "value": "https://norwaytechlabs.no"
+        },
+        "industryLabel": {
+          "type": "literal",
+          "value": "Software Engineering"
+        }
+      }
+    ]
+  }
+}
