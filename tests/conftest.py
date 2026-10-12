@@ -33,7 +33,7 @@ def brreg_enhet_fixture_json(brreg_enhet_fixture_raw: str) -> dict:
 @pytest.fixture
 def brreg_regnskap_fixture_raw() -> str:
     """Load raw JSON text for Brreg Regnskapsregisteret fixture."""
-    return (FIXTURES_DIR / "brreg_regnskap_923609016.json").read_text(encoding="utf-8")
+    return (FIXTURES_DIR / "regnskap_923609016.json").read_text(encoding="utf-8")
 
 
 @pytest.fixture

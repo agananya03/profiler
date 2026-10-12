@@ -31,7 +31,7 @@ async def test_brreg_roller_adapter_success(roller_fixture: str):
 
         assert len(facts) >= 1
         roles_fact = next(f for f in facts if f.field == "roles")
-        assert len(roles_fact.value) == 3
+        assert len(roles_fact.value) == 15
 
         ceo_role = next(r for r in roles_fact.value if r["role_code"] == "DAGL")
         assert ceo_role["name"] == "Anders Opedal"
@@ -42,10 +42,10 @@ async def test_brreg_roller_adapter_success(roller_fixture: str):
         assert ceo_fact.value == "Anders Opedal"
 
         chair_fact = next(f for f in facts if f.field == "chair")
-        assert chair_fact.value == "Jon Erik"
+        assert chair_fact.value == "Jarle Kjell Roth"
 
         auditor_fact = next(f for f in facts if f.field == "auditor")
-        assert "PRICEWATERHOUSECOOPERS" in auditor_fact.value
+        assert "ERNST & YOUNG AS" in auditor_fact.value
 
 
 @pytest.mark.asyncio

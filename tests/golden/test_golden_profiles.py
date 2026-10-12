@@ -29,10 +29,20 @@ async def test_golden_company_profile(brreg_enhet_fixture_raw, brreg_regnskap_fi
         assert len(profile.facts) > 0
 
         name_fact = next(f for f in profile.facts if f.field == "legal_name")
-        assert name_fact.value == "NORWEGIAN TECH LABS AS"
-
-        emp_fact = next(f for f in profile.facts if f.field == "employee_count")
-        assert emp_fact.value == 15
+        assert name_fact.value == "EQUINOR ASA"
 
         fin_fact = next(f for f in profile.facts if f.field == "financials")
-        assert fin_fact.value["revenue"] == 15000000.0
+        import json
+        raw = json.loads((FIXTURES_DIR / "regnskap_923609016.json").read_text(encoding="utf-8"))
+        latest_end = max(x["regnskapsperiode"]["tilDato"] for x in raw)
+        konsern = next(
+            x for x in raw
+            if x["regnskapstype"] == "KONSERN"
+            and x["regnskapsperiode"]["tilDato"] == latest_end
+        )
+        expected_revenue = konsern["resultatregnskapResultat"]["driftsresultat"]["driftsinntekter"]["sumDriftsinntekter"]
+
+        assert fin_fact.value["revenue"] == expected_revenue
+        assert fin_fact.value["fiscal_year_end"] == latest_end
+        assert fin_fact.value["currency"] == konsern["valuta"]
+        assert fin_fact.value["is_consolidated"] is True

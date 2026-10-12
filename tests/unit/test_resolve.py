@@ -184,6 +184,7 @@ def test_normalize_url_and_domain_extraction():
     assert normalize_url("www.equinor.com") == "https://www.equinor.com"
 
     assert _extract_domain("[www.equinor.com](https://www.equinor.com)") == "equinor.com"
+    assert _extract_domain("www.equinor.com") == "equinor.com"
     assert _extract_domain("https://www.norgesbank.no/") == "norgesbank.no"
     assert _extract_domain("https://www.ssb.no") == "ssb.no"
     assert _extract_domain("https://www.mil.no/en/about-us/museums-and-music") == "mil.no"
@@ -194,7 +195,7 @@ def test_domain_matching_equinor_norgesbank_ssb_forsvaret_and_careers_rejection(
     now = datetime.now(timezone.utc)
 
     # 1. Equinor pass
-    ctx_equinor = MockCtx(orgnr="923609016", registry_facts={"website": "[www.equinor.com](https://www.equinor.com)"})
+    ctx_equinor = MockCtx(orgnr="923609016", registry_facts={"website": "www.equinor.com"})
     fact_equinor = Fact(
         orgnr="923609016",
         field="emails",

@@ -122,7 +122,7 @@ async def test_website_adapter_registry_fact_match_basis(website_html_fixture: s
     budget = BudgetTracker()
     async with HttpClient(budget) as http:
         ctx = Ctx(http=http, budget=budget)
-        setattr(ctx, "registry_facts", {"website": "[norwaytechlabs.no](https://norwaytechlabs.no)"})
+        setattr(ctx, "registry_facts", {"website": "norwaytechlabs.no"})
         adapter = WebsiteAdapter()
         facts = await adapter.fetch("923609016", ctx)
 

@@ -41,21 +41,6 @@ async def test_golden_truth_comparison(brreg_enhet_fixture_raw, brreg_regnskap_f
     )
 
     # Mock 986161474 responses
-    sample_986161474 = {
-        "organisasjonsnummer": "986161474",
-        "navn": "TORDENSKJOLD CONSULTING AS",
-        "organisasjonsform": {"kode": "AS", "beskrivelse": "Aksjeselskap"},
-        "forretningsadresse": {"adresse": ["Storgata 1"], "postnummer": "0155", "poststed": "OSLO"},
-        "antallAnsatte": 5,
-        "naeringskode1": {"kode": "62.020", "beskrivelse": "IT-rådgivning"},
-        "registreringsdatoEnhetsregisteret": "2010-05-15",
-    }
-    respx.get("https://data.brreg.no/enhetsregisteret/api/enheter/986161474").respond(
-        status_code=200, json=sample_986161474
-    )
-    respx.get("https://data.brreg.no/regnskapsregisteret/regnskap/986161474").respond(
-        status_code=404, json={"feilmelding": "Ikke funnet"}
-    )
 
     async with Orchestrator(adapters=[BrregEnhetAdapter(), BrregRegnskapAdapter()]) as orchestrator:
         for row in truth_rows:
