@@ -153,6 +153,8 @@ class Orchestrator:
                         registry_facts["website"] = f.value
                     elif f.field == "sub_units":
                         registry_facts["sub_units"] = f.value
+                    elif f.field == "is_group_parent":
+                        registry_facts["is_group_parent"] = f.value
                 if f.field == "lei":
                     registry_facts["lei"] = f.value
 
@@ -295,6 +297,8 @@ class Orchestrator:
                     registry_facts["website"] = f.value
                 elif f.field == "sub_units":
                     registry_facts["sub_units"] = f.value
+                elif f.field == "is_group_parent":
+                    registry_facts["is_group_parent"] = f.value
 
         if not ctx:
             class InternalCtx:
@@ -452,8 +456,10 @@ class Orchestrator:
                 "dropped_facts_count": len(dropped_facts),
                 "dropped_facts": dropped_facts,
                 "skipped_stages": skipped_stages,
-                "llm_tokens": getattr(self.budget, "llm_tokens", 0) or 0,
-                "llm_model": getattr(self.llm_client, "model_name", None) or os.getenv("LLM_MODEL"),
+                "llm_model": getattr(self.llm_client, "last_model_used", None) or getattr(self.llm_client, "model_name", None) or os.getenv("LLM_MODEL"),
+                "llm_models_used": getattr(self.llm_client, "models_used", {}) if self.llm_client else {},
+                "llm_retries": getattr(self.llm_client, "retry_count", 0) if self.llm_client else 0,
+                "llm_backoff_seconds": round(getattr(self.llm_client, "total_backoff_seconds", 0.0), 3) if self.llm_client else 0.0,
             },
         )
 

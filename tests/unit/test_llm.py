@@ -243,7 +243,10 @@ async def test_fabricated_quote_yields_zero_facts(tmp_path: Path):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("status_code", [429, 400])
 @respx.mock
-async def test_http_error_raises_llmerror_and_not_cached(tmp_path: Path, status_code: int):
+async def test_http_error_raises_llmerror_and_not_cached(tmp_path: Path, status_code: int, monkeypatch):
+    from unittest.mock import AsyncMock
+    monkeypatch.setattr("asyncio.sleep", AsyncMock(return_value=None))
+
     model = "gemini-2.5-flash"
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     respx.post(url).respond(status_code=status_code, text=f"Error {status_code}: Request Failed")
@@ -332,3 +335,196 @@ async def test_stale_empty_cache_entries_from_older_prompt_version_are_ignored(t
     updated_data = json.loads(stale_cache_file.read_text(encoding="utf-8"))
     assert updated_data["prompt_version"] == PROMPT_VERSION
     assert len(updated_data["extracted_items"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_fake_client_503_twice_then_success_returns_facts(tmp_path: Path):
+    """Test requirement 6: 503 twice then success returns facts with retries tracked."""
+    page_text = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia and Europe."
+    quote = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia"
+    value = "enterprise cloud software solutions"
+    fake_items = [{"field": "description", "value": value, "quote": quote}]
+
+    budget = BudgetTracker()
+    client = FakeLLMClient(
+        fake_items=fake_items,
+        responses=[503, 503, 200],
+        cache_dir=str(tmp_path / "llm_cache"),
+    )
+
+    facts = await client.extract_facts(
+        page_text=page_text,
+        source_url="https://norwaytechlabs.no",
+        orgnr="923609016",
+        match_basis=["domain_match"],
+        budget=budget,
+    )
+
+    assert len(facts) == 1
+    assert facts[0].field == "description"
+    assert facts[0].value == value
+    # Check that model actually answered is recorded in fact metadata
+    assert facts[0].metadata.get("model") == client.model_name
+    assert facts[0].metadata.get("llm_model") == client.model_name
+    # Check retry counts and backoff seconds
+    assert client.retry_count == 2
+    assert client.total_backoff_seconds >= 6.0  # 2s + 4s base
+    assert client.models_used.get(client.model_name) == 1
+    assert len(client.call_history) == 3
+
+
+@pytest.mark.asyncio
+async def test_fake_client_503_on_all_attempts_with_fallback_uses_fallback(tmp_path: Path, monkeypatch):
+    """Test requirement 6: 503 on all attempts with fallback model set uses the fallback."""
+    monkeypatch.setenv("LLM_MODEL", "gemini-3.6-flash")
+    monkeypatch.setenv("LLM_FALLBACK_MODEL", "gemini-1.5-flash")
+
+    page_text = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia and Europe."
+    quote = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia"
+    value = "enterprise cloud software solutions"
+    fake_items = [{"field": "description", "value": value, "quote": quote}]
+
+    budget = BudgetTracker()
+    # 4 attempts on primary (initial + 3 retries) returning 503, then 1 attempt on fallback returning 200
+    client = FakeLLMClient(
+        fake_items=fake_items,
+        responses=[503, 503, 503, 503, 200],
+        cache_dir=str(tmp_path / "llm_cache"),
+    )
+
+    facts = await client.extract_facts(
+        page_text=page_text,
+        source_url="https://norwaytechlabs.no",
+        orgnr="923609016",
+        match_basis=["domain_match"],
+        budget=budget,
+    )
+
+    assert len(facts) == 1
+    assert facts[0].field == "description"
+    # Recorded fallback model in metadata
+    assert facts[0].metadata.get("model") == "gemini-1.5-flash"
+    assert facts[0].metadata.get("llm_model") == "gemini-1.5-flash"
+    assert client.last_model_used == "gemini-1.5-flash"
+    assert client.models_used.get("gemini-1.5-flash") == 1
+    assert client.models_used.get("gemini-3.6-flash", 0) == 0
+    assert client.retry_count == 3
+    assert client.total_backoff_seconds >= 14.0  # 2s + 4s + 8s base
+    assert len(client.call_history) == 5
+    assert [c["model"] for c in client.call_history] == [
+        "gemini-3.6-flash",
+        "gemini-3.6-flash",
+        "gemini-3.6-flash",
+        "gemini-3.6-flash",
+        "gemini-1.5-flash",
+    ]
+
+
+@pytest.mark.asyncio
+async def test_fake_client_400_raises_immediately_without_retrying(tmp_path: Path, monkeypatch):
+    """Test requirement 6: 400 raises immediately without retrying or falling back."""
+    monkeypatch.setenv("LLM_MODEL", "gemini-3.6-flash")
+    monkeypatch.setenv("LLM_FALLBACK_MODEL", "gemini-1.5-flash")
+
+    page_text = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia and Europe."
+    budget = BudgetTracker()
+    client = FakeLLMClient(
+        responses=[400],
+        cache_dir=str(tmp_path / "llm_cache"),
+    )
+
+    with pytest.raises(LLMError, match="HTTP 400"):
+        await client.extract_facts(
+            page_text=page_text,
+            source_url="https://norwaytechlabs.no",
+            orgnr="923609016",
+            match_basis=["domain_match"],
+            budget=budget,
+        )
+
+    assert client.retry_count == 0
+    assert client.total_backoff_seconds == 0.0
+    assert len(client.call_history) == 1
+    assert client.call_history[0]["model"] == "gemini-3.6-flash"
+    # Rule 4: Failures must not be cached
+    assert len(list((tmp_path / "llm_cache").glob("*.json"))) == 0
+
+
+@pytest.mark.asyncio
+async def test_fake_client_retry_after_header_honored(tmp_path: Path):
+    """Test requirement 1: honor Retry-After header on 429."""
+    page_text = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia and Europe."
+    quote = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia"
+    value = "enterprise cloud software solutions"
+    fake_items = [{"field": "description", "value": value, "quote": quote}]
+
+    budget = BudgetTracker()
+    client = FakeLLMClient(
+        fake_items=fake_items,
+        responses=[(429, {"Retry-After": "7.5"}), 200],
+        cache_dir=str(tmp_path / "llm_cache"),
+    )
+
+    facts = await client.extract_facts(
+        page_text=page_text,
+        source_url="https://norwaytechlabs.no",
+        orgnr="923609016",
+        match_basis=["domain_match"],
+        budget=budget,
+    )
+
+    assert len(facts) == 1
+    assert client.retry_count == 1
+    assert client.total_backoff_seconds == 7.5
+
+
+@pytest.mark.asyncio
+async def test_fake_client_503_all_attempts_no_fallback_raises_llmerror(tmp_path: Path, monkeypatch):
+    """Test requirement 2: if LLM_FALLBACK_MODEL is unset, do not fall back on 503."""
+    monkeypatch.delenv("LLM_FALLBACK_MODEL", raising=False)
+    page_text = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia and Europe."
+
+    budget = BudgetTracker()
+    client = FakeLLMClient(
+        responses=[503, 503, 503, 503],
+        cache_dir=str(tmp_path / "llm_cache"),
+    )
+
+    with pytest.raises(LLMError, match="HTTP 503"):
+        await client.extract_facts(
+            page_text=page_text,
+            source_url="https://norwaytechlabs.no",
+            orgnr="923609016",
+            match_basis=["domain_match"],
+            budget=budget,
+        )
+
+    assert client.retry_count == 3
+    assert len(client.call_history) == 4
+    # Failures must not be cached
+    assert len(list((tmp_path / "llm_cache").glob("*.json"))) == 0
+
+
+@pytest.mark.asyncio
+async def test_fake_client_500_all_attempts_does_not_use_fallback(tmp_path: Path, monkeypatch):
+    """Test requirement 2: only 503 and 429 trigger fallback model, 500 does not."""
+    monkeypatch.setenv("LLM_FALLBACK_MODEL", "gemini-1.5-flash")
+    page_text = "Norwegian Tech Labs AS provides enterprise cloud software solutions across Scandinavia and Europe."
+
+    budget = BudgetTracker()
+    client = FakeLLMClient(
+        responses=[500, 500, 500, 500],
+        cache_dir=str(tmp_path / "llm_cache"),
+    )
+
+    with pytest.raises(LLMError, match="HTTP 500"):
+        await client.extract_facts(
+            page_text=page_text,
+            source_url="https://norwaytechlabs.no",
+            orgnr="923609016",
+            match_basis=["domain_match"],
+            budget=budget,
+        )
+
+    assert client.retry_count == 3
+    assert len(client.call_history) == 4  # Did not attempt fallback

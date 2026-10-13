@@ -95,7 +95,12 @@ def reconcile_facts_with_discrepancies(
     now = now or datetime.now(timezone.utc)
     grouped: Dict[str, List[Fact]] = {}
     for f in facts:
-        grouped.setdefault(f.field, []).append(f)
+        key = f.field
+        if f.field == "financials" and isinstance(f.value, dict):
+            scope = f.value.get("is_consolidated")
+            scope_name = "konsern" if scope is True else "selskap" if scope is False else "unknown"
+            key = f"financials:{scope_name}"
+        grouped.setdefault(key, []).append(f)
 
     reconciled: List[Fact] = []
     discrepancies: List[Dict[str, Any]] = []
@@ -107,6 +112,7 @@ def reconcile_facts_with_discrepancies(
             key=lambda f: (
                 TIER_PRIORITIES.get(get_source_tier(f), 0),
                 f.retrieved_at or datetime.min.replace(tzinfo=timezone.utc),
+                str(f.source_date or ""),
             ),
             reverse=True,
         )

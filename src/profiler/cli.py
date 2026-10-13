@@ -267,7 +267,20 @@ def run_cmd(
                 "per_source_retries": per_source_retries,
                 "per_source_backoff_seconds": per_source_backoff,
                 "errors_by_source": errors_by_source,
-                "llm_model": getattr(llm_client, "model_name", None) or os.getenv("LLM_MODEL"),
+                "llm_model": getattr(llm_client, "last_model_used", None) or getattr(llm_client, "model_name", None) or os.getenv("LLM_MODEL"),
+                "llm_models_used": getattr(llm_client, "models_used", {}) if llm_client else {},
+                "llm_retries": getattr(llm_client, "retry_count", 0) if llm_client else 0,
+                "llm_retry_count": getattr(llm_client, "retry_count", 0) if llm_client else 0,
+                "llm_backoff_seconds": round(getattr(llm_client, "total_backoff_seconds", 0.0), 3) if llm_client else 0.0,
+                "retry_counts": {
+                    "http": sum(per_source_retries.values()),
+                    "llm": getattr(llm_client, "retry_count", 0) if llm_client else 0,
+                    "total": sum(per_source_retries.values()) + (getattr(llm_client, "retry_count", 0) if llm_client else 0),
+                },
+                "total_backoff_seconds": round(
+                    sum(per_source_backoff.values()) + (getattr(llm_client, "total_backoff_seconds", 0.0) if llm_client else 0.0),
+                    3,
+                ),
                 "llm_tokens": {
                     "input_tokens": getattr(llm_client, "last_tokens_in", 0) if llm_client else 0,
                     "output_tokens": getattr(llm_client, "last_tokens_out", 0) if llm_client else 0,

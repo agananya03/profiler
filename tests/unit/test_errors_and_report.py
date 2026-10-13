@@ -152,6 +152,11 @@ def test_cli_run_replay_mode_report(tmp_path: Path):
     assert "per_field_fill_rate" in report
     assert report["average_fields_per_profile"] > 0
     assert len(report["per_field_fill_rate"]) > 0
+    assert "llm_models_used" in report
+    assert "llm_retries" in report
+    assert "llm_backoff_seconds" in report
+    assert "retry_counts" in report
+    assert "total_backoff_seconds" in report
 
 
 def test_cli_run_report_written_on_stage_failure(tmp_path: Path):

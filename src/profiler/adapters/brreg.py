@@ -270,7 +270,21 @@ class BrregEnhetAdapter(BaseAdapter):
                             confidence=confidence,
                         )
                     )
-
+            # 9b. is_group_parent (registry flag erIKonsern)
+            if "erIKonsern" in data:
+                facts.append(
+                    Fact(
+                        orgnr=orgnr,
+                        field="is_group_parent",
+                        value=bool(data["erIKonsern"]),
+                        source_name=source_name,
+                        source_url=url,
+                        retrieved_at=ctx.now,
+                        method=method,
+                        match_basis=match_basis,
+                        confidence=confidence,
+                    )
+                )
             # 10. vat_registered
             if "registrertIMvaregisteret" in data:
                 facts.append(

@@ -115,7 +115,11 @@ def accept(fact: Fact, ctx: Any = None) -> Decision:
     official_website = getattr(ctx, "official_website", None) or registry.get("website") or registry.get("hjemmeside")
     postal_code = getattr(ctx, "postal_code", None) or registry.get("postal_code")
     legal_name = getattr(ctx, "legal_name", None) or registry.get("legal_name") or registry.get("name")
-    is_parent: bool = getattr(ctx, "is_parent", False) or bool(registry.get("sub_units"))
+    is_parent: bool = (
+        getattr(ctx, "is_parent", False)
+        or bool(registry.get("sub_units"))
+        or registry.get("is_group_parent") is True
+    )
 
     # Rule 4: Name-only evidence ALWAYS rejected
     if any(mb.lower() == "name_only" for mb in fact.match_basis) or fact.match_basis == ["name_only"]:

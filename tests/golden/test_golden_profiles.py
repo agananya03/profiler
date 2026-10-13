@@ -31,7 +31,8 @@ async def test_golden_company_profile(brreg_enhet_fixture_raw, brreg_regnskap_fi
         name_fact = next(f for f in profile.facts if f.field == "legal_name")
         assert name_fact.value == "EQUINOR ASA"
 
-        fin_fact = next(f for f in profile.facts if f.field == "financials")
+        fin_facts = [f for f in profile.facts if f.field == "financials"]
+        fin_fact = next(f for f in fin_facts if f.value["is_consolidated"] is True)
         import json
         raw = json.loads((FIXTURES_DIR / "regnskap_923609016.json").read_text(encoding="utf-8"))
         latest_end = max(x["regnskapsperiode"]["tilDato"] for x in raw)
